@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ejercicio 03 - Ahorcado</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            font-family: Arial, sans-serif;
+
+            background-color: #f3f3f3;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .contenedor {
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #333;
+        }
+
+        .juego {
+            width: 400px;
+            padding: 20px;
+
+            background-color: #202020;
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        canvas {
+            display: block;
+
+            margin: 0 auto 15px auto;
+
+            background-color: white;
+
+            border-radius: 5px;
+        }
+
+        #palabra {
+            min-height: 45px;
+
+            margin-bottom: 15px;
+
+            font-size: 28px;
+            font-weight: bold;
+
+            letter-spacing: 8px;
+
+            color: white;
+        }
+
+        #mensaje {
+            min-height: 25px;
+
+            margin-bottom: 10px;
+
+            color: white;
+
+            font-size: 16px;
+        }
+
+        .letras {
+            display: grid;
+
+            grid-template-columns:
+                repeat(6, 1fr);
+
+            gap: 5px;
+        }
+
+        .letras button {
+            height: 45px;
+
+            border: none;
+            border-radius: 5px;
+
+            font-size: 16px;
+
+            color: white;
+            background-color: #333333;
+
+            cursor: pointer;
+        }
+
+        .letras button:hover {
+            background-color: #444444;
+        }
+
+        .letras button:disabled {
+            background-color: #666666;
+
+            cursor: not-allowed;
+        }
+
+        #nuevoJuego {
+            width: 100%;
+
+            height: 50px;
+
+            margin-top: 10px;
+
+            border: none;
+            border-radius: 5px;
+
+            font-size: 16px;
+
+            color: white;
+
+            background-color: #0067c0;
+
+            cursor: pointer;
+        }
+
+        #nuevoJuego:hover {
+            background-color: #0078d4;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="contenedor">
+
+        <h1>Juego del Ahorcado</h1>
+
+        <p>Adivina la palabra antes de completar el ahorcado.</p>
+
+        <div class="juego">
+
+            <canvas
+                id="canvas"
+                width="350"
+                height="250">
+            </canvas>
+
+            <div id="palabra"></div>
+
+            <div id="mensaje">
+                Seleccione una letra
+            </div>
+
+            <div id="letras"></div>
+
+            <button id="nuevoJuego">
+                Nuevo juego
+            </button>
+
+        </div>
+
+    </div>
+
+    <script src="script_ejercicio_03.js"></script>
+
+</body>
+
+</html>
