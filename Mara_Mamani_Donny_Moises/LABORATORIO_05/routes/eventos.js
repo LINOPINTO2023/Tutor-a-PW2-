@@ -17,6 +17,7 @@ function fechaHoraValidas(fecha, hora) {
     return FECHA_RE.test(fecha) && HORA_RE.test(hora);
 }
 
+
 function tituloValido(titulo) {
     return typeof titulo === 'string' && titulo.trim() !== '' && !/[\r\n]/.test(titulo);
 }
@@ -25,7 +26,6 @@ function rutaEvento(fecha, hora) {
     return path.join(AGENDA_DIR, fecha, `${hora}.txt`);
 }
 
-// Línea 1 = título, resto = descripción
 function contenidoEvento(titulo, descripcion = '') {
     return `${titulo.trim()}\n${descripcion}`;
 }
@@ -91,7 +91,6 @@ router.post('/', async (request, response) => {
     }
 });
 
-// Ver detalle: muestra el contenido completo del archivo (para editar)
 router.get('/:fecha/:hora', async (request, response) => {
     const { fecha, hora } = request.params;
 
@@ -112,7 +111,6 @@ router.get('/:fecha/:hora', async (request, response) => {
     }
 });
 
-// Editar: solo cambia título y descripción; la fecha y hora identifican el archivo
 router.put('/:fecha/:hora', async (request, response) => {
     const { fecha, hora } = request.params;
     const { titulo, descripcion } = request.body;
@@ -125,7 +123,7 @@ router.put('/:fecha/:hora', async (request, response) => {
     }
 
     try {
-        await fs.access(rutaEvento(fecha, hora));   // falla con ENOENT si no existe
+        await fs.access(rutaEvento(fecha, hora));
         await fs.writeFile(rutaEvento(fecha, hora), contenidoEvento(titulo, descripcion));
         response.json({ mensaje: 'Evento actualizado' });
     } catch (err) {
@@ -137,7 +135,6 @@ router.put('/:fecha/:hora', async (request, response) => {
     }
 });
 
-// Eliminar: borra el archivo y, si el día queda vacío, también su carpeta
 router.delete('/:fecha/:hora', async (request, response) => {
     const { fecha, hora } = request.params;
 

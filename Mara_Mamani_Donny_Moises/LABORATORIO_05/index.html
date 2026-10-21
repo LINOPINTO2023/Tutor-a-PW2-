@@ -2,11 +2,78 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agenda personal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <h1>Agenda personal</h1>
+    <header class="encabezado">
+        <div class="marca">
+            <h1>Agenda personal</h1>
+        </div>
+    </header>
+
+    <main class="contenedor">
+        <section class="tarjeta">
+            <div class="tarjeta-cabecera">
+                <span class="icono-titulo material-symbols-outlined">edit_calendar</span>
+                <h2 id="tituloFormulario">Nuevo evento</h2>
+            </div>
+
+            <form id="formEvento" class="formulario">
+                <div class="fila-campos">
+                    <div class="campo">
+                        <label for="fecha">Fecha <span class="requerido">*</span></label>
+                        <input type="date" id="fecha" required>
+                    </div>
+                    <div class="campo">
+                        <label for="hora">Hora <span class="requerido">*</span></label>
+                        <input type="time" id="hora" required>
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="titulo">Título del evento <span class="requerido">*</span></label>
+                    <input type="text" id="titulo" maxlength="100" placeholder="Ej. Reunión de laboratorio" required>
+                </div>
+
+                <div class="campo">
+                    <label for="descripcion">Descripción</label>
+                    <textarea id="descripcion" rows="5" placeholder="Detalles del evento, notas o enlaces..."></textarea>
+                </div>
+
+                <div class="acciones">
+                    <button type="submit" class="boton primario">
+                        <span class="material-symbols-outlined">save</span>
+                        Guardar evento
+                    </button>
+                </div>
+            </form>
+
+            <div id="mensaje" class="mensaje" role="status" hidden>
+                <span class="mensaje-icono material-symbols-outlined"></span>
+                <div>
+                    <strong class="mensaje-titulo"></strong>
+                    <p class="mensaje-detalle"></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="tarjeta">
+            <div class="tarjeta-cabecera">
+                <span class="icono-titulo material-symbols-outlined">account_tree</span>
+                <h2>Eventos registrados</h2>
+                <span id="contador" class="contador">0 eventos</span>
+            </div>
+
+            <div id="arbol" class="arbol"></div>
+        </section>
+    </main>
+
     <script src="js/app.js"></script>
 </body>
 </html>
