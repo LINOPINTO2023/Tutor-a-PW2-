@@ -210,6 +210,50 @@ textarea {
     background: var(--acento-oscuro);
 }
 
+.boton.secundario {
+    background: var(--panel);
+    border-color: var(--borde);
+    color: var(--texto);
+}
+
+.boton.secundario:hover {
+    background: var(--campo);
+}
+
+.boton-icono {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+}
+
+.fila .boton-icono .material-symbols-outlined {
+    font-size: 18px;
+    color: var(--suave);
+}
+
+.boton-icono:hover {
+    background: var(--campo);
+}
+
+.fila .boton-icono:hover .material-symbols-outlined {
+    color: var(--texto);
+}
+
+.fila .boton-icono.eliminar:hover .material-symbols-outlined {
+    color: var(--error);
+}
+
+.acciones-evento {
+    display: flex;
+    gap: 2px;
+}
+
 .mensaje {
     display: flex;
     gap: 12px;
@@ -298,6 +342,11 @@ textarea {
 
 .fila.archivo:hover {
     background: var(--panel);
+}
+
+.fila.archivo.editando {
+    background: var(--acento-suave);
+    box-shadow: inset 3px 0 0 var(--acento);
 }
 
 .fila .material-symbols-outlined {

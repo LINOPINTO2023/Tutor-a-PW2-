@@ -5,9 +5,14 @@ const campoFecha = document.querySelector('#fecha');
 const campoHora = document.querySelector('#hora');
 const campoTitulo = document.querySelector('#titulo');
 const campoDescripcion = document.querySelector('#descripcion');
+const tituloFormulario = document.querySelector('#tituloFormulario');
+const textoGuardar = document.querySelector('#textoGuardar');
+const btnCancelar = document.querySelector('#btnCancelar');
 const mensaje = document.querySelector('#mensaje');
 const arbol = document.querySelector('#arbol');
 const contador = document.querySelector('#contador');
+
+let editando = null;
 
 function mostrarMensaje(tipo, titulo, detalle = '') {
     mensaje.className = `mensaje ${tipo}`;
@@ -18,10 +23,15 @@ function mostrarMensaje(tipo, titulo, detalle = '') {
 }
 
 async function pedir(url, opciones = {}) {
-    const response = await fetch(url, {
-        headers: { 'Content-Type': 'application/json' },
-        ...opciones
-    });
+    let response;
+    try {
+        response = await fetch(url, {
+            headers: { 'Content-Type': 'application/json' },
+            ...opciones
+        });
+    } catch {
+        throw new Error('No se pudo conectar con el servidor');
+    }
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
         const error = new Error(data.error || `Error ${response.status}`);
@@ -29,6 +39,18 @@ async function pedir(url, opciones = {}) {
         throw error;
     }
     return data;
+}
+
+function rutaEvento(fecha, hora) {
+    return `${API}/${fecha}/${hora}`;
+}
+
+function rutaArchivo(fecha, hora) {
+    return `agenda/${fecha}/${hora}.txt`;
+}
+
+function horaLegible(hora) {
+    return hora.replace('-', ':');
 }
 
 function crearElemento(etiqueta, clase, texto = '') {
@@ -56,6 +78,16 @@ function crearFila(clase, nombreIcono, nombre, tipo) {
     return fila;
 }
 
+function crearBotonIcono(nombreIcono, descripcion, clase, accion) {
+    const boton = crearElemento('button', `boton-icono ${clase}`);
+    boton.type = 'button';
+    boton.title = descripcion;
+    boton.setAttribute('aria-label', descripcion);
+    boton.append(icono(nombreIcono));
+    boton.addEventListener('click', accion);
+    return boton;
+}
+
 function crearEstadoVacio() {
     const vacio = crearElemento('div', 'vacio');
     vacio.append(
@@ -63,6 +95,25 @@ function crearEstadoVacio() {
         crearElemento('h3', '', 'No hay eventos registrados')
     );
     return vacio;
+}
+
+function crearFilaEvento(fecha, hora, titulo) {
+    const fila = crearFila('archivo', 'description', `${hora}.txt`, 'FILE');
+    fila.dataset.fecha = fecha;
+    fila.dataset.hora = hora;
+
+    const acciones = crearElemento('span', 'acciones-evento');
+    acciones.append(
+        crearBotonIcono('edit', 'Editar evento', 'editar', () => editarEvento(fecha, hora)),
+        crearBotonIcono('delete', 'Eliminar evento', 'eliminar', () => eliminarEvento(fecha, hora, titulo))
+    );
+
+    fila.append(
+        crearElemento('span', 'titulo-evento', titulo),
+        crearElemento('span', 'meta', horaLegible(hora)),
+        acciones
+    );
+    return fila;
 }
 
 function dibujarArbol(fechas) {
@@ -83,13 +134,8 @@ function dibujarArbol(fechas) {
 
         const listaEventos = document.createElement('ul');
         for (const { hora, titulo } of eventos) {
-            const filaEvento = crearFila('archivo', 'description', `${hora}.txt`, 'FILE');
-            filaEvento.append(
-                crearElemento('span', 'titulo-evento', titulo),
-                crearElemento('span', 'meta', hora.replace('-', ':'))
-            );
             const itemEvento = document.createElement('li');
-            itemEvento.append(filaEvento);
+            itemEvento.append(crearFilaEvento(fecha, hora, titulo));
             listaEventos.append(itemEvento);
         }
 
@@ -98,6 +144,27 @@ function dibujarArbol(fechas) {
         listaFechas.append(itemFecha);
     }
     arbol.append(listaFechas);
+    marcarEditando();
+}
+
+function marcarEditando() {
+    for (const fila of arbol.querySelectorAll('.fila.archivo')) {
+        const activa = editando !== null
+            && fila.dataset.fecha === editando.fecha
+            && fila.dataset.hora === editando.hora;
+        fila.classList.toggle('editando', activa);
+    }
+}
+
+function modoCreacion() {
+    editando = null;
+    form.reset();
+    campoFecha.disabled = false;
+    campoHora.disabled = false;
+    tituloFormulario.textContent = 'Nuevo evento';
+    textoGuardar.textContent = 'Guardar evento';
+    btnCancelar.hidden = true;
+    marcarEditando();
 }
 
 async function cargarEventos() {
@@ -108,21 +175,72 @@ async function cargarEventos() {
     }
 }
 
+async function editarEvento(fecha, hora) {
+    try {
+        const evento = await pedir(rutaEvento(fecha, hora));
+        editando = { fecha, hora };
+        campoFecha.value = fecha;
+        campoHora.value = horaLegible(hora);
+        campoTitulo.value = evento.titulo;
+        campoDescripcion.value = evento.descripcion;
+        campoFecha.disabled = true;
+        campoHora.disabled = true;
+        tituloFormulario.textContent = 'Editar evento';
+        textoGuardar.textContent = 'Guardar cambios';
+        btnCancelar.hidden = false;
+        mensaje.hidden = true;
+        marcarEditando();
+        campoTitulo.focus();
+    } catch (err) {
+        mostrarMensaje('error', err.message);
+        await cargarEventos();
+    }
+}
+
+async function eliminarEvento(fecha, hora, titulo) {
+    if (!confirm(`¿Eliminar el evento «${titulo}» del ${fecha} a las ${horaLegible(hora)}?`)) {
+        return;
+    }
+
+    try {
+        const respuesta = await pedir(rutaEvento(fecha, hora), { method: 'DELETE' });
+        if (editando && editando.fecha === fecha && editando.hora === hora) {
+            modoCreacion();
+        }
+        mostrarMensaje('exito', respuesta.mensaje, `Se borró ${rutaArchivo(fecha, hora)}`);
+    } catch (err) {
+        mostrarMensaje('error', err.message);
+    }
+    await cargarEventos();
+}
+
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    const datos = {
-        fecha: campoFecha.value,
-        hora: campoHora.value.slice(0, 5).replace(':', '-'),
+    const fecha = campoFecha.value;
+    const hora = campoHora.value.slice(0, 5).replace(':', '-');
+    const archivo = rutaArchivo(fecha, hora);
+    const contenido = {
         titulo: campoTitulo.value,
         descripcion: campoDescripcion.value
     };
-    const archivo = `agenda/${datos.fecha}/${datos.hora}.txt`;
 
     try {
-        const respuesta = await pedir(API, { method: 'POST', body: JSON.stringify(datos) });
-        mostrarMensaje('exito', respuesta.mensaje, `Se guardó en ${archivo}`);
-        form.reset();
+        if (editando) {
+            const respuesta = await pedir(rutaEvento(editando.fecha, editando.hora), {
+                method: 'PUT',
+                body: JSON.stringify(contenido)
+            });
+            modoCreacion();
+            mostrarMensaje('exito', respuesta.mensaje, `Se actualizó ${archivo}`);
+        } else {
+            const respuesta = await pedir(API, {
+                method: 'POST',
+                body: JSON.stringify({ fecha, hora, ...contenido })
+            });
+            form.reset();
+            mostrarMensaje('exito', respuesta.mensaje, `Se guardó en ${archivo}`);
+        }
         await cargarEventos();
     } catch (err) {
         const detalle = err.status === 409
@@ -130,6 +248,11 @@ form.addEventListener('submit', async (event) => {
             : '';
         mostrarMensaje('error', err.message, detalle);
     }
+});
+
+btnCancelar.addEventListener('click', () => {
+    modoCreacion();
+    mensaje.hidden = true;
 });
 
 cargarEventos();
