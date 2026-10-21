@@ -1,0 +1,13 @@
+{
+  "name": "agenda-personal-lab04",
+  "version": "1.0.0",
+  "description": "Agenda personal con Node.js, Express y Fetch/AJAX para el Laboratorio 4",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
