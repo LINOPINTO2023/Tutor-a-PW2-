@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agenda Personal | Laboratorio 4</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-mark" aria-hidden="true">A</div>
+    <div>
+      <p class="eyebrow">PROGRAMACIÓN WEB 2 · LABORATORIO 4</p>
+      <h1>Agenda personal</h1>
+    </div>
+    <span class="server-pill"><span class="status-dot"></span> Servidor local</span>
+  </header>
+
+  <main class="layout">
+    <section class="panel tree-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">EXPLORADOR</p>
+          <h2>Mis eventos</h2>
+        </div>
+        <button id="refreshButton" class="icon-button" title="Actualizar lista" aria-label="Actualizar lista">↻</button>
+      </div>
+      <p class="muted small">Explora el árbol por año, mes y día. Aquí se muestra únicamente el título de cada evento.</p>
+      <div id="eventTree" class="event-tree" aria-live="polite">
+        <p class="muted">Cargando eventos…</p>
+      </div>
+      <div class="tree-footer"><span class="tree-symbol">▸</span> Archivos de eventos (.txt)</div>
+    </section>
+
+    <section class="panel editor-panel">
+      <div class="panel-heading editor-heading">
+        <div>
+          <p class="eyebrow">GESTIÓN DE EVENTOS</p>
+          <h2 id="formHeading">Crear evento</h2>
+        </div>
+        <span id="modeBadge" class="mode-badge">NUEVO</span>
+      </div>
+
+      <div id="notice" class="notice" role="status" hidden></div>
+
+      <form id="eventForm">
+        <div class="field-grid">
+          <label class="field">
+            <span>Fecha <b>*</b></span>
+            <input id="date" name="date" type="date" required>
+          </label>
+          <label class="field">
+            <span>Hora <b>*</b></span>
+            <input id="time" name="time" type="time" required>
+          </label>
+        </div>
+        <label class="field">
+          <span>Título del evento <b>*</b></span>
+          <input id="title" name="title" type="text" maxlength="120" placeholder="Ej. Reunión de proyecto" required>
+        </label>
+        <label class="field">
+          <span>Descripción</span>
+          <textarea id="description" name="description" rows="7" placeholder="Escribe los detalles del evento…"></textarea>
+          <small>El título se guarda en la primera línea del archivo y la descripción en las líneas siguientes.</small>
+        </label>
+
+        <div class="button-row">
+          <button id="saveButton" type="submit" class="button primary">＋ Guardar evento</button>
+          <button id="cancelButton" type="button" class="button secondary" hidden>Cancelar edición</button>
+          <button id="deleteButton" type="button" class="button danger-outline" hidden>Eliminar</button>
+          <button id="clearButton" type="button" class="button ghost">Limpiar</button>
+        </div>
+      </form>
+
+      <div class="tip-card">
+        <div class="tip-icon">i</div>
+        <p><strong>Importante:</strong> la fecha y hora identifican el archivo. No se permite crear dos eventos con la misma fecha y hora.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>Agenda Personal · Node.js + Express + Fetch API</footer>
+  <script src="/js/app.js" defer></script>
+</body>
+</html>
